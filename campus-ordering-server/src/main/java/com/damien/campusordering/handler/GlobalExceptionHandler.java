@@ -1,10 +1,13 @@
 package com.damien.campusordering.handler;
 
+import com.damien.campusordering.constant.MessageConstant;
 import com.damien.campusordering.exception.BaseException;
 import com.damien.campusordering.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.sql.SQLIntegrityConstraintViolationException;
 
 /**
  * 全局异常处理器，处理项目中抛出的业务异常
@@ -24,5 +27,21 @@ public class GlobalExceptionHandler {
         return Result.error(ex.getMessage());
     }
 
+    /**
+     * 捕获SQL异常
+     *
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler
+    public Result exceptionHandler(SQLIntegrityConstraintViolationException ex) {
+        if (ex.getMessage().contains("Duplicate entry")) {
+            String[] split = ex.getMessage().split(" ");
+            String msg = split[2] + MessageConstant.ALREADY_EXISTS;
+            return Result.error(msg);
+        } else {
+            return Result.error(MessageConstant.UNKNOWN_ERROR);
+        }
+    }
 }
 

@@ -1,5 +1,6 @@
 package com.damien.campusordering.service;
 
+import com.damien.campusordering.dto.EmployeeDTO;
 import com.damien.campusordering.dto.EmployeeLoginDTO;
 import com.damien.campusordering.entity.Employee;
 
@@ -12,5 +13,11 @@ public interface EmployeeService {
      */
     Employee login(EmployeeLoginDTO employeeLoginDTO);
 
+    /**
+     * 新增员工
+     *
+     * @param employeeDTO
+     */
+    void save(EmployeeDTO employeeDTO);
 }
 

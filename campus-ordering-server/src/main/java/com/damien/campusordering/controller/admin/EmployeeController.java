@@ -1,6 +1,7 @@
 package com.damien.campusordering.controller.admin;
 
 import com.damien.campusordering.constant.JwtClaimsConstant;
+import com.damien.campusordering.dto.EmployeeDTO;
 import com.damien.campusordering.dto.EmployeeLoginDTO;
 import com.damien.campusordering.entity.Employee;
 import com.damien.campusordering.properties.JwtProperties;
@@ -41,7 +42,7 @@ public class EmployeeController {
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
         log.info("员工登录：{}", employeeLoginDTO);
 
-            Employee employee = employeeService.login(employeeLoginDTO);
+        Employee employee = employeeService.login(employeeLoginDTO);
 
         //登录成功后，生成jwt令牌
         Map<String, Object> claims = new HashMap<>();
@@ -70,6 +71,19 @@ public class EmployeeController {
     public Result<String> logout() {
         return Result.success();
     }
+
+    /**
+     * 新增员工
+     *
+     * @return
+     */
+    @PostMapping
+    public Result<String> save(@RequestBody EmployeeDTO employeeDTO) {
+        log.info("新增员工，员工数据：{}", employeeDTO);
+        employeeService.save(employeeDTO);
+        return Result.success();
+    }
+
 
 }
 
