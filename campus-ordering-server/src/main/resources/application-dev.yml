@@ -2,8 +2,8 @@ campus:
   ordering:
     datasource:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      host: localhost
+      host: 127.0.0.1
       port: 13306
       database: campus_ordering
       username: root
-      password: root
+      password: 123456

@@ -3,18 +3,17 @@ package com.damien.campusordering.controller.admin;
 import com.damien.campusordering.constant.JwtClaimsConstant;
 import com.damien.campusordering.dto.EmployeeDTO;
 import com.damien.campusordering.dto.EmployeeLoginDTO;
+import com.damien.campusordering.dto.EmployeePageQueryDTO;
 import com.damien.campusordering.entity.Employee;
 import com.damien.campusordering.properties.JwtProperties;
+import com.damien.campusordering.result.PageResult;
 import com.damien.campusordering.result.Result;
 import com.damien.campusordering.service.EmployeeService;
 import com.damien.campusordering.utils.JwtUtil;
 import com.damien.campusordering.vo.EmployeeLoginVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -82,6 +81,18 @@ public class EmployeeController {
         log.info("新增员工，员工数据：{}", employeeDTO);
         employeeService.save(employeeDTO);
         return Result.success();
+    }
+
+    /**
+     * 封装分页查询结果
+     *
+     * @param employeePageQueryDTO
+     * @return
+     */
+    @GetMapping("/page")
+    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO) {
+        log.info("分页查询：{}", employeePageQueryDTO);
+        return Result.success(employeeService.pageQuery(employeePageQueryDTO));
     }
 
 

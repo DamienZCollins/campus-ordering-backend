@@ -6,12 +6,16 @@ import com.damien.campusordering.constant.StatusConstant;
 import com.damien.campusordering.context.BaseContext;
 import com.damien.campusordering.dto.EmployeeDTO;
 import com.damien.campusordering.dto.EmployeeLoginDTO;
+import com.damien.campusordering.dto.EmployeePageQueryDTO;
 import com.damien.campusordering.entity.Employee;
 import com.damien.campusordering.exception.AccountLockedException;
 import com.damien.campusordering.exception.AccountNotFoundException;
 import com.damien.campusordering.exception.PasswordErrorException;
 import com.damien.campusordering.mapper.EmployeeMapper;
+import com.damien.campusordering.result.PageResult;
 import com.damien.campusordering.service.EmployeeService;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,6 +90,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setUpdateUser(BaseContext.getCurrentId());
 
         employeeMapper.insert(employee);
+    }
+
+    @Override
+    public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+        PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
+        Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
+        return new PageResult(page.getTotal(), page.getResult());
     }
 
 }
