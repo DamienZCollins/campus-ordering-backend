@@ -4,6 +4,7 @@ import com.damien.campusordering.constant.JwtClaimsConstant;
 import com.damien.campusordering.dto.EmployeeDTO;
 import com.damien.campusordering.dto.EmployeeLoginDTO;
 import com.damien.campusordering.dto.EmployeePageQueryDTO;
+import com.damien.campusordering.dto.PasswordEditDTO;
 import com.damien.campusordering.entity.Employee;
 import com.damien.campusordering.properties.JwtProperties;
 import com.damien.campusordering.result.PageResult;
@@ -129,6 +130,13 @@ public class EmployeeController {
     public Result<Void> update(@RequestBody EmployeeDTO employeeDTO) {
         log.info("编辑员工信息,{}", employeeDTO);
         employeeService.update(employeeDTO);
+        return Result.success();
+    }
+
+    @PutMapping("/editPassword")
+    public Result<Void> editPassword(@RequestBody PasswordEditDTO passwordEditDTO) {
+        log.info("修改密码");
+        employeeService.editPassword(passwordEditDTO);
         return Result.success();
     }
 }

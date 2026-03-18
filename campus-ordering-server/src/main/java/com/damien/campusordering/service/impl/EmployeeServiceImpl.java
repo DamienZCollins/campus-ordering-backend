@@ -7,6 +7,7 @@ import com.damien.campusordering.context.BaseContext;
 import com.damien.campusordering.dto.EmployeeDTO;
 import com.damien.campusordering.dto.EmployeeLoginDTO;
 import com.damien.campusordering.dto.EmployeePageQueryDTO;
+import com.damien.campusordering.dto.PasswordEditDTO;
 import com.damien.campusordering.entity.Employee;
 import com.damien.campusordering.exception.AccountLockedException;
 import com.damien.campusordering.exception.AccountNotFoundException;
@@ -146,6 +147,37 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setUpdateTime(LocalDateTime.now());
         employee.setUpdateUser(BaseContext.getCurrentId());
         employeeMapper.update(employee);
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param passwordEditDTO
+     */
+    @Override
+    public void editPassword(PasswordEditDTO passwordEditDTO) {
+        Long empId = BaseContext.getCurrentId();
+
+        // 1. 根据当前登录员工id查询员工信息
+        Employee employee = employeeMapper.getById(empId);
+        if (employee == null) {
+            throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
+        }
+
+        // 2. 校验旧密码（MD5加密后比对）
+        String oldPasswordMd5 = DigestUtils.md5DigestAsHex(passwordEditDTO.getOldPassword().getBytes());
+        if (!oldPasswordMd5.equals(employee.getPassword())) {
+            throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
+        }
+
+        // 3. 新密码MD5加密后，复用已有的update方法更新
+        Employee updateEmployee = Employee.builder()
+                .id(empId)
+                .password(DigestUtils.md5DigestAsHex(passwordEditDTO.getNewPassword().getBytes()))
+                .updateTime(LocalDateTime.now())
+                .updateUser(empId)
+                .build();
+        employeeMapper.update(updateEmployee);
     }
 }
 

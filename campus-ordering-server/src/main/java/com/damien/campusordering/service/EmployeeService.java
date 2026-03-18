@@ -3,6 +3,7 @@ package com.damien.campusordering.service;
 import com.damien.campusordering.dto.EmployeeDTO;
 import com.damien.campusordering.dto.EmployeeLoginDTO;
 import com.damien.campusordering.dto.EmployeePageQueryDTO;
+import com.damien.campusordering.dto.PasswordEditDTO;
 import com.damien.campusordering.entity.Employee;
 import com.damien.campusordering.result.PageResult;
 
@@ -46,6 +47,18 @@ public interface EmployeeService {
      */
     Employee getById(Long id);
 
+    /**
+     * 编辑员工信息
+     *
+     * @param employeeDTO
+     */
     void update(EmployeeDTO employeeDTO);
+
+    /**
+     * 修改密码
+     *
+     * @param passwordEditDTO
+     */
+    void editPassword(PasswordEditDTO passwordEditDTO);
 }
 
