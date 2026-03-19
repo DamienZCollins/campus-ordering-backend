@@ -19,16 +19,18 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import java.time.LocalDateTime;
-
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private EmployeeMapper employeeMapper;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     /**
      * 员工登录
@@ -50,11 +52,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         //密码比对
-        // md5转换
-        //TODO 可以优化为BCrypt
-        password = DigestUtils.md5DigestAsHex(password.getBytes());
-
-        if (!password.equals(employee.getPassword())) {
+        if (!passwordEncoder.matches(password, employee.getPassword())) {
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
@@ -82,7 +80,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         //默认账号状态
         employee.setStatus(StatusConstant.ENABLE);
         //默认密码
-        employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
+        employee.setPassword(passwordEncoder.encode(PasswordConstant.DEFAULT_PASSWORD));
         //创建时间和修改时间
         employee.setCreateTime(LocalDateTime.now());
         employee.setUpdateTime(LocalDateTime.now());
@@ -164,16 +162,15 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
 
-        // 2. 校验旧密码（MD5加密后比对）
-        String oldPasswordMd5 = DigestUtils.md5DigestAsHex(passwordEditDTO.getOldPassword().getBytes());
-        if (!oldPasswordMd5.equals(employee.getPassword())) {
+        // 2. 校验旧密码
+        if (!passwordEncoder.matches(passwordEditDTO.getOldPassword(), employee.getPassword())) {
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
 
-        // 3. 新密码MD5加密后，复用已有的update方法更新
+        // 3.更新
         Employee updateEmployee = Employee.builder()
                 .id(empId)
-                .password(DigestUtils.md5DigestAsHex(passwordEditDTO.getNewPassword().getBytes()))
+                .password(passwordEncoder.encode(passwordEditDTO.getNewPassword()))
                 .updateTime(LocalDateTime.now())
                 .updateUser(empId)
                 .build();

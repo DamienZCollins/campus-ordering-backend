@@ -133,6 +133,12 @@ public class EmployeeController {
         return Result.success();
     }
 
+    /**
+     * 修改密码
+     *
+     * @param passwordEditDTO
+     * @return
+     */
     @PutMapping("/editPassword")
     public Result<Void> editPassword(@RequestBody PasswordEditDTO passwordEditDTO) {
         log.info("修改密码");
