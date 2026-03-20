@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public class EmployeeController {
      * @return
      */
     @PostMapping("/login")
-    public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
+    public Result<EmployeeLoginVO> login(@RequestBody @Valid EmployeeLoginDTO employeeLoginDTO) {
         log.info("员工登录：{}", employeeLoginDTO);
 
         Employee employee = employeeService.login(employeeLoginDTO);
@@ -78,7 +79,7 @@ public class EmployeeController {
      * @return
      */
     @PostMapping
-    public Result<Void> save(@RequestBody EmployeeDTO employeeDTO) {
+    public Result<Void> save(@RequestBody @Valid EmployeeDTO employeeDTO) {
         log.info("新增员工，员工数据：{}", employeeDTO);
         employeeService.save(employeeDTO);
         return Result.success();
@@ -127,7 +128,7 @@ public class EmployeeController {
      * @return
      */
     @PutMapping()
-    public Result<Void> update(@RequestBody EmployeeDTO employeeDTO) {
+    public Result<Void> update(@RequestBody @Valid EmployeeDTO employeeDTO) {
         log.info("编辑员工信息,{}", employeeDTO);
         employeeService.update(employeeDTO);
         return Result.success();
@@ -140,7 +141,7 @@ public class EmployeeController {
      * @return
      */
     @PutMapping("/editPassword")
-    public Result<Void> editPassword(@RequestBody PasswordEditDTO passwordEditDTO) {
+    public Result<Void> editPassword(@RequestBody @Valid PasswordEditDTO passwordEditDTO) {
         log.info("修改密码");
         employeeService.editPassword(passwordEditDTO);
         return Result.success();
