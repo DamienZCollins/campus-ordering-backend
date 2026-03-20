@@ -11,6 +11,7 @@ import com.damien.campusordering.dto.PasswordEditDTO;
 import com.damien.campusordering.entity.Employee;
 import com.damien.campusordering.exception.AccountLockedException;
 import com.damien.campusordering.exception.AccountNotFoundException;
+import com.damien.campusordering.exception.BaseException;
 import com.damien.campusordering.exception.PasswordErrorException;
 import com.damien.campusordering.mapper.EmployeeMapper;
 import com.damien.campusordering.result.PageResult;
@@ -73,6 +74,11 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public void save(EmployeeDTO employeeDTO) {
+        Employee existingEmployee = employeeMapper.getByUsername(employeeDTO.getUsername());
+        if (existingEmployee != null) {
+            throw new BaseException(MessageConstant.USERNAME_ALREADY_EXISTS);
+        }
+
         Employee employee = new Employee();
         //TODO 可以优化为MapStruct1
         BeanUtils.copyProperties(employeeDTO, employee);
