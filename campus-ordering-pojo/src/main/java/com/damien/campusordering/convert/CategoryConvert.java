@@ -1,12 +1,12 @@
 package com.damien.campusordering.convert;
 
-import com.damien.campusordering.dto.EmployeeDTO;
-import com.damien.campusordering.entity.Employee;
+import com.damien.campusordering.dto.CategoryDTO;
+import com.damien.campusordering.entity.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface EmployeeConvert {
+public interface CategoryConvert {
 
-    Employee toEntity(EmployeeDTO employeeDTO);
+    Category toEntity(CategoryDTO categoryDTO);
 }

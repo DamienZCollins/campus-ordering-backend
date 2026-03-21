@@ -1,13 +1,13 @@
 package com.damien.campusordering.controller.admin;
 
+import com.damien.campusordering.dto.CategoryDTO;
 import com.damien.campusordering.dto.CategoryPageQueryDTO;
 import com.damien.campusordering.result.PageResult;
 import com.damien.campusordering.result.Result;
 import com.damien.campusordering.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -16,10 +16,30 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @RequestMapping("/page")
+    /**
+     * 分类分页查询
+     *
+     * @param categoryPageQueryDTO
+     * @return
+     */
+    @GetMapping("/page")
     public Result<PageResult> page(CategoryPageQueryDTO categoryPageQueryDTO) {
         log.info("分页查询：{}", categoryPageQueryDTO);
         return Result.success(categoryService.pageQuery(categoryPageQueryDTO));
+    }
+
+
+    /**
+     * 新增分类
+     *
+     * @param categoryDTO
+     * @return
+     */
+    @PostMapping
+    public Result<Void> save(@RequestBody CategoryDTO categoryDTO) {
+        log.info("新增分类：{}", categoryDTO);
+        categoryService.save(categoryDTO);
+        return Result.success();
     }
 
 }

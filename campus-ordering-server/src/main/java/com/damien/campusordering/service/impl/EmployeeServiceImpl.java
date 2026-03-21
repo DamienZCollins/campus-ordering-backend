@@ -33,6 +33,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private EmployeeConvert employeeConvert;
+
     /**
      * 员工登录
      *
@@ -79,7 +82,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new BaseException(MessageConstant.USERNAME_ALREADY_EXISTS);
         }
 
-        Employee employee = EmployeeConvert.INSTANCE.toEntity(employeeDTO);
+        Employee employee = employeeConvert.toEntity(employeeDTO);
         //TODO 可以使用AOP
         //默认账号状态
         employee.setStatus(StatusConstant.ENABLE);
@@ -143,7 +146,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public void update(EmployeeDTO employeeDTO) {
-        Employee employee = EmployeeConvert.INSTANCE.toEntity(employeeDTO);
+        Employee employee = employeeConvert.toEntity(employeeDTO);
         employee.setUpdateTime(LocalDateTime.now());
         employee.setUpdateUser(BaseContext.getCurrentId());
         employeeMapper.update(employee);
