@@ -25,4 +25,12 @@ public interface CategoryMapper {
             " VALUES" +
             " (#{type}, #{name}, #{sort}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
     void insert(Category category);
+
+    /**
+     * 修改分类
+     *
+     * @param category
+     */
+
+    void update(Category category);
 }

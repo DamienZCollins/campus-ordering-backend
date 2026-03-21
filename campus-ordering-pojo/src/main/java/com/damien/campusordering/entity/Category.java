@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -35,10 +36,10 @@ public class Category implements Serializable {
     //更新时间
     private LocalDateTime updateTime;
 
-    //创建时间
+    //创建人
     private Long createUser;
 
-    //修改时间
+    //修改人
     private Long updateUser;
 }
 

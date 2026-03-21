@@ -122,14 +122,14 @@ public class EmployeeController {
     }
 
     /**
-     * 编辑员工信息
+     * 修改员工信息
      *
      * @param employeeDTO
      * @return
      */
     @PutMapping()
     public Result<Void> update(@RequestBody @Valid EmployeeDTO employeeDTO) {
-        log.info("编辑员工信息,{}", employeeDTO);
+        log.info("修改员工信息,{}", employeeDTO);
         employeeService.update(employeeDTO);
         return Result.success();
     }
