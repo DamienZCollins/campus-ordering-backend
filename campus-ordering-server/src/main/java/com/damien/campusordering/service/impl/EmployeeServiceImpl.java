@@ -4,6 +4,7 @@ import com.damien.campusordering.constant.MessageConstant;
 import com.damien.campusordering.constant.PasswordConstant;
 import com.damien.campusordering.constant.StatusConstant;
 import com.damien.campusordering.context.BaseContext;
+import com.damien.campusordering.convert.EmployeeConvert;
 import com.damien.campusordering.dto.EmployeeDTO;
 import com.damien.campusordering.dto.EmployeeLoginDTO;
 import com.damien.campusordering.dto.EmployeePageQueryDTO;
@@ -18,7 +19,6 @@ import com.damien.campusordering.result.PageResult;
 import com.damien.campusordering.service.EmployeeService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -79,9 +79,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new BaseException(MessageConstant.USERNAME_ALREADY_EXISTS);
         }
 
-        Employee employee = new Employee();
-        //TODO 可以优化为MapStruct1
-        BeanUtils.copyProperties(employeeDTO, employee);
+        Employee employee = EmployeeConvert.INSTANCE.toEntity(employeeDTO);
         //TODO 可以使用AOP
         //默认账号状态
         employee.setStatus(StatusConstant.ENABLE);
@@ -145,9 +143,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public void update(EmployeeDTO employeeDTO) {
-        Employee employee = new Employee();
-        //TODO 可以优化为MapStruct2
-        BeanUtils.copyProperties(employeeDTO, employee);
+        Employee employee = EmployeeConvert.INSTANCE.toEntity(employeeDTO);
         employee.setUpdateTime(LocalDateTime.now());
         employee.setUpdateUser(BaseContext.getCurrentId());
         employeeMapper.update(employee);
