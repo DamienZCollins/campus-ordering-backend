@@ -3,6 +3,7 @@ package com.damien.campusordering.mapper;
 import com.damien.campusordering.dto.CategoryPageQueryDTO;
 import com.damien.campusordering.entity.Category;
 import com.github.pagehelper.Page;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -43,4 +44,12 @@ public interface CategoryMapper {
      * @return
      */
     List<Category> list(Integer type);
+
+    /**
+     * 根据id删除
+     *
+     * @param id
+     */
+    @Delete("delete from category where id = #{id}")
+    void deleteById(Long id);
 }

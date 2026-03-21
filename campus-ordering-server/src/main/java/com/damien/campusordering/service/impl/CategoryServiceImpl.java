@@ -1,12 +1,16 @@
 package com.damien.campusordering.service.impl;
 
+import com.damien.campusordering.constant.MessageConstant;
 import com.damien.campusordering.constant.StatusConstant;
 import com.damien.campusordering.context.BaseContext;
 import com.damien.campusordering.convert.CategoryConvert;
 import com.damien.campusordering.dto.CategoryDTO;
 import com.damien.campusordering.dto.CategoryPageQueryDTO;
 import com.damien.campusordering.entity.Category;
+import com.damien.campusordering.exception.DeletionNotAllowedException;
 import com.damien.campusordering.mapper.CategoryMapper;
+import com.damien.campusordering.mapper.DishMapper;
+import com.damien.campusordering.mapper.SetmealMapper;
 import com.damien.campusordering.result.PageResult;
 import com.damien.campusordering.service.CategoryService;
 import com.github.pagehelper.Page;
@@ -24,6 +28,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private CategoryConvert categoryConvert;
+
+    @Autowired
+    private DishMapper dishMapper;
+
+    @Autowired
+    private SetmealMapper setmealMapper;
+
 
     /**
      * 分类分页查询
@@ -101,6 +112,32 @@ public class CategoryServiceImpl implements CategoryService {
     public List<Category> list(Integer type) {
         return categoryMapper.list(type);
     }
+
+    /**
+     * 分类删除
+     *
+     * @param id
+     */
+    @Override
+    public void deleteById(Long id) {
+        //查询当前分类是否关联了菜品
+        Integer count = dishMapper.countByCategoryId(id);
+        if (count > 0) {
+            //当前分类下有菜品，不能删除
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
+        }
+
+        //查询当前分类是否关联了套餐
+        count = setmealMapper.countByCategoryId(id);
+        if (count > 0) {
+            //当前分类下有菜品，不能删除
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
+        }
+
+        //删除分类数据
+        categoryMapper.deleteById(id);
+    }
+
 
 
 }
