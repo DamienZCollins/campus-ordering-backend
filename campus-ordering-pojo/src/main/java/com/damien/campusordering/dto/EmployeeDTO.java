@@ -1,8 +1,8 @@
 package com.damien.campusordering.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 @Data
