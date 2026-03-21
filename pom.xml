@@ -21,15 +21,14 @@
         <java.version>21</java.version>
         <mybatis.spring>3.0.3</mybatis.spring>
         <lombok>1.18.34</lombok>
-        <fastjson>1.2.76</fastjson>
-        <commons.lang>2.6</commons.lang>
+        <commons-lang3>3.14.0</commons-lang3>
         <druid>1.2.21</druid>
         <pagehelper>2.1.0</pagehelper>
         <aliyun.sdk.oss>3.10.2</aliyun.sdk.oss>
         <aspectj>1.9.4</aspectj>
-        <jjwt>0.9.1</jjwt>
+        <jjwt>0.12.5</jjwt>
         <jaxb-api>2.3.1</jaxb-api>
-        <poi>3.16</poi>
+        <easyexcel>3.3.4</easyexcel>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -45,16 +44,12 @@
                 <version>${lombok}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>${fastjson}</version>
-            </dependency>
+
 
             <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>${commons.lang}</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3}</version>
             </dependency>
 
             <dependency>
@@ -83,7 +78,17 @@
 
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt</artifactId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
                 <version>${jjwt}</version>
             </dependency>
 
@@ -93,22 +98,11 @@
                 <version>${aliyun.sdk.oss}</version>
             </dependency>
 
+            <!-- easyexcel -->
             <dependency>
-                <groupId>jakarta.xml.bind</groupId>
-                <artifactId>jakarta.xml.bind-api</artifactId>
-                <version>4.0.0</version>
-            </dependency>
-
-            <!-- poi -->
-            <dependency>
-                <groupId>org.apache.poi</groupId>
-                <artifactId>poi</artifactId>
-                <version>${poi}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.poi</groupId>
-                <artifactId>poi-ooxml</artifactId>
-                <version>${poi}</version>
+                <groupId>com.alibaba</groupId>
+                <artifactId>easyexcel</artifactId>
+                <version>${easyexcel}</version>
             </dependency>
 
             <dependency>

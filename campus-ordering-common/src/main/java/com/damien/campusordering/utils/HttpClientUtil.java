@@ -1,6 +1,6 @@
 package com.damien.campusordering.utils;
 
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -63,7 +63,9 @@ public class HttpClientUtil {
             e.printStackTrace();
         }finally {
             try {
-                response.close();
+                if (response != null) {
+                    response.close();
+                }
                 httpClient.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -92,7 +94,7 @@ public class HttpClientUtil {
 
             // 创建参数列表
             if (paramMap != null) {
-                List<NameValuePair> paramList = new ArrayList();
+                List<NameValuePair> paramList = new ArrayList<>();
                 for (Map.Entry<String, String> param : paramMap.entrySet()) {
                     paramList.add(new BasicNameValuePair(param.getKey(), param.getValue()));
                 }
@@ -111,7 +113,9 @@ public class HttpClientUtil {
             throw e;
         } finally {
             try {
-                response.close();
+                if (response != null) {
+                    response.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -139,11 +143,9 @@ public class HttpClientUtil {
 
             if (paramMap != null) {
                 //构造json格式数据
-                JSONObject jsonObject = new JSONObject();
-                for (Map.Entry<String, String> param : paramMap.entrySet()) {
-                    jsonObject.put(param.getKey(),param.getValue());
-                }
-                StringEntity entity = new StringEntity(jsonObject.toString(),"utf-8");
+                ObjectMapper objectMapper = new ObjectMapper();
+                String jsonString = objectMapper.writeValueAsString(paramMap);
+                StringEntity entity = new StringEntity(jsonString, "utf-8");
                 //设置请求编码
                 entity.setContentEncoding("utf-8");
                 //设置数据类型
@@ -161,7 +163,9 @@ public class HttpClientUtil {
             throw e;
         } finally {
             try {
-                response.close();
+                if (response != null) {
+                    response.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -169,6 +173,7 @@ public class HttpClientUtil {
 
         return resultString;
     }
+
     private static RequestConfig builderRequestConfig() {
         return RequestConfig.custom()
                 .setConnectTimeout(TIMEOUT_MSEC)
@@ -177,4 +182,3 @@ public class HttpClientUtil {
     }
 
 }
-
