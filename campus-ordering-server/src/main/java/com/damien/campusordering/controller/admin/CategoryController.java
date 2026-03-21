@@ -2,12 +2,15 @@ package com.damien.campusordering.controller.admin;
 
 import com.damien.campusordering.dto.CategoryDTO;
 import com.damien.campusordering.dto.CategoryPageQueryDTO;
+import com.damien.campusordering.entity.Category;
 import com.damien.campusordering.result.PageResult;
 import com.damien.campusordering.result.Result;
 import com.damien.campusordering.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -67,6 +70,19 @@ public class CategoryController {
         log.info("启用/禁用分类，分类 ID:{}, 状态:{}", id, status);
         categoryService.startOrStop(status, id);
         return Result.success();
+    }
+
+    /**
+     * 分类查询
+     *
+     * @param type
+     * @return
+     */
+    //TODO 前端接口不对
+    @GetMapping("/list")
+    public Result<List<Category>> list(Integer type) {
+        List<Category> list = categoryService.list(type);
+        return Result.success(list);
     }
 }
 

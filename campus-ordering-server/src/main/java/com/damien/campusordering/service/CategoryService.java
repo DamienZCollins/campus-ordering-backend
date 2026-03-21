@@ -2,7 +2,10 @@ package com.damien.campusordering.service;
 
 import com.damien.campusordering.dto.CategoryDTO;
 import com.damien.campusordering.dto.CategoryPageQueryDTO;
+import com.damien.campusordering.entity.Category;
 import com.damien.campusordering.result.PageResult;
+
+import java.util.List;
 
 public interface CategoryService {
     /**
@@ -34,4 +37,12 @@ public interface CategoryService {
      * @param id
      */
     void startOrStop(Integer status, Long id);
+
+    /**
+     * 分类列表
+     *
+     * @param type
+     * @return
+     */
+    List<Category> list(Integer type);
 }

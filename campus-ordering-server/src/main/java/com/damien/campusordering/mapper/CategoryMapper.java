@@ -6,6 +6,8 @@ import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface CategoryMapper {
     /**
@@ -33,4 +35,12 @@ public interface CategoryMapper {
      */
 
     void update(Category category);
+
+    /**
+     * 根据类型查询
+     *
+     * @param type
+     * @return
+     */
+    List<Category> list(Integer type);
 }
