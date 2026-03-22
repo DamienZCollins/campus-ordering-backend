@@ -83,18 +83,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         Employee employee = employeeConvert.toEntity(employeeDTO);
-        //TODO 可以使用AOP
         //默认账号状态
         employee.setStatus(StatusConstant.ENABLE);
         //默认密码
         employee.setPassword(passwordEncoder.encode(PasswordConstant.DEFAULT_PASSWORD));
-        //创建时间和修改时间
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-        //创建人、修改人
-        employee.setCreateUser(BaseContext.getCurrentId());
-        employee.setUpdateUser(BaseContext.getCurrentId());
-
         employeeMapper.insert(employee);
     }
 
@@ -122,8 +114,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = Employee.builder()
                 .status(status)
                 .id(id)
-                .updateTime(LocalDateTime.now())
-                .updateUser(BaseContext.getCurrentId())
                 .build();
         employeeMapper.update(employee);
     }
@@ -149,8 +139,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void update(EmployeeDTO employeeDTO) {
         Employee employee = employeeConvert.toEntity(employeeDTO);
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateUser(BaseContext.getCurrentId());
         employeeMapper.update(employee);
     }
 
@@ -174,12 +162,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
 
-        // 3.更新
+        // 3.更新 
         Employee updateEmployee = Employee.builder()
                 .id(empId)
                 .password(passwordEncoder.encode(passwordEditDTO.getNewPassword()))
-                .updateTime(LocalDateTime.now())
-                .updateUser(empId)
+
                 .build();
         employeeMapper.update(updateEmployee);
     }
