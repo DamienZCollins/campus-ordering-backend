@@ -7,3 +7,10 @@ campus:
       database: campus_ordering
       username: root
       password: 123456
+    alioss:
+      endpoint:
+      access-key-id:
+      access-key-secret:
+      bucket-name:
+
+
