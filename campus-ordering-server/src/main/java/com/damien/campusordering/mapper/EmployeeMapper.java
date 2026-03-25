@@ -28,8 +28,7 @@ public interface EmployeeMapper {
      * @param employee
      */
     @Insert("insert into employee " +
-            "(username, name, password, phone, sex, id_number, status, create_time, update_time, create_user, update_user) "
-            +
+            "(username, name, password, phone, sex, id_number, status, create_time, update_time, create_user, update_user) " +
             "values" +
             "(#{username}, #{name}, #{password}, #{phone}, #{sex}, #{idNumber}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
     @AutoFill(value = OperationType.INSERT)

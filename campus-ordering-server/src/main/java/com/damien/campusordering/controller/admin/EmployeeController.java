@@ -45,6 +45,7 @@ public class EmployeeController {
 
         Employee employee = employeeService.login(employeeLoginDTO);
         //TODO优化为双令牌
+        //TODO未处理令牌失效的日志输出
         //登录成功后，生成jwt令牌
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.EMP_ID, employee.getId());
