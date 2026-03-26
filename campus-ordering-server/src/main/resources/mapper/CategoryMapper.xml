@@ -40,6 +40,7 @@
         </where>
         ORDER BY sort ASC, create_time DESC
     </select>
+
     <select id="list" resultType="com.damien.campusordering.entity.Category">
         select * from category
         where status = 1

@@ -1,6 +1,8 @@
 package com.damien.campusordering.service;
 
 import com.damien.campusordering.dto.DishDTO;
+import com.damien.campusordering.dto.DishPageQueryDTO;
+import com.damien.campusordering.result.PageResult;
 
 public interface DishService {
     /**
@@ -9,4 +11,12 @@ public interface DishService {
      * @param dishDTO
      */
     void saveWithFlavor(DishDTO dishDTO);
+
+    /**
+     * 菜品分页查询
+     *
+     * @param dishPageQueryDTO
+     * @return
+     */
+    PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO);
 }

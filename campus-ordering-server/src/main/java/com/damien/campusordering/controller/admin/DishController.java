@@ -1,14 +1,13 @@
 package com.damien.campusordering.controller.admin;
 
 import com.damien.campusordering.dto.DishDTO;
+import com.damien.campusordering.dto.DishPageQueryDTO;
+import com.damien.campusordering.result.PageResult;
 import com.damien.campusordering.result.Result;
 import com.damien.campusordering.service.DishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin/dish")
@@ -29,4 +28,18 @@ public class DishController {
         log.info("新增菜品{}", dishDTO);
         return Result.success();
     }
+
+    /**
+     * 菜品分页查询
+     *
+     * @param dishPageQueryDTO
+     * @return
+     */
+    @GetMapping("/page")
+    public Result<PageResult> page(DishPageQueryDTO dishPageQueryDTO) {
+        log.info("菜品分页查询{}", dishPageQueryDTO);
+        return Result.success(dishService.pageQuery(dishPageQueryDTO));
+    }
+
+
 }
