@@ -1,12 +1,16 @@
 package com.damien.campusordering.service.impl;
 
+import com.damien.campusordering.constant.MessageConstant;
+import com.damien.campusordering.constant.StatusConstant;
 import com.damien.campusordering.convert.DishConvert;
 import com.damien.campusordering.dto.DishDTO;
 import com.damien.campusordering.dto.DishPageQueryDTO;
 import com.damien.campusordering.entity.Dish;
 import com.damien.campusordering.entity.DishFlavor;
+import com.damien.campusordering.exception.DeletionNotAllowedException;
 import com.damien.campusordering.mapper.DishFlavorMapper;
 import com.damien.campusordering.mapper.DishMapper;
+import com.damien.campusordering.mapper.SetmealDishMapper;
 import com.damien.campusordering.result.PageResult;
 import com.damien.campusordering.service.DishService;
 import com.damien.campusordering.vo.DishVO;
@@ -28,6 +32,8 @@ public class DishServiceImpl implements DishService {
     private DishConvert dishConvert;
     @Autowired
     private DishFlavorMapper dishFlavorsMapper;
+    @Autowired
+    private SetmealDishMapper setmealDishMapper;
 
     /**
      * 新增菜品
@@ -63,5 +69,31 @@ public class DishServiceImpl implements DishService {
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
         Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
         return new PageResult(page.getTotal(), page.getResult());
+    }
+
+    /**
+     * 删除菜品
+     *
+     * @param ids
+     */
+    @Override
+    public void deleteBatch(List<Long> ids) {
+        //判断是否起售
+        for (Long id : ids) {
+            Dish dish = dishMapper.getById(id);
+            if (StatusConstant.ENABLE.equals(dish.getStatus())) {
+                throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+            }
+        }
+        //判断是否被套餐关联
+        List<Long> setmealIds = setmealDishMapper.getSetmealIdsByDishId(ids);
+        if (setmealIds != null && !setmealIds.isEmpty()) {
+            //起售中的套餐
+            throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
+        }
+        //删除菜品数据
+        dishMapper.deleteBatch(ids);
+        //删除菜品口味数据
+        dishFlavorsMapper.deleteByDishIds(ids);
     }
 }
