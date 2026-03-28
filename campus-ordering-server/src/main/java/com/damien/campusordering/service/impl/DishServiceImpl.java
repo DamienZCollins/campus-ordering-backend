@@ -150,10 +150,27 @@ public class DishServiceImpl implements DishService {
             dishFlavorsMapper.deleteByDishIds(List.of(dishDTO.getId()));
 
             // 如果有新口味数据，批量插入
-            if (flavors != null && !flavors.isEmpty()) {
+            if (!flavors.isEmpty()) {
                 flavors.forEach(dishFlavor -> dishFlavor.setDishId(dishDTO.getId()));
                 dishFlavorsMapper.insertBatch(flavors);
             }
         }
+    }
+
+    /**
+     * 起售停售
+     *
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        log.info("起售停售{}", id);
+        Dish dish = Dish.builder()
+                .id(id)
+                .status(status)
+                .build();
+        dishMapper.update(dish);
+
     }
 }
