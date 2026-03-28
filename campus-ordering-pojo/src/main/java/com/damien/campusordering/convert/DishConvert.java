@@ -2,6 +2,7 @@ package com.damien.campusordering.convert;
 
 import com.damien.campusordering.dto.DishDTO;
 import com.damien.campusordering.entity.Dish;
+import com.damien.campusordering.vo.DishVO;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -9,4 +10,5 @@ import org.mapstruct.ReportingPolicy;
 public interface DishConvert {
     Dish toEntity(DishDTO dishDTO);
 
+    DishVO toVO(Dish dish);
 }

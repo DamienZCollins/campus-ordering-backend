@@ -5,6 +5,7 @@ import com.damien.campusordering.dto.DishPageQueryDTO;
 import com.damien.campusordering.result.PageResult;
 import com.damien.campusordering.result.Result;
 import com.damien.campusordering.service.DishService;
+import com.damien.campusordering.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -54,5 +55,17 @@ public class DishController {
         log.info("批量删除菜品{}", ids);
         dishService.deleteBatch(ids);
         return Result.success();
+    }
+
+    /**
+     * 根据id查询菜品和对应的口味
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    public Result<DishVO> getById(@PathVariable Long id) {
+        log.info("根据id查询菜品信息{}", id);
+        return Result.success(dishService.getByIdWithFlavor(id));
     }
 }

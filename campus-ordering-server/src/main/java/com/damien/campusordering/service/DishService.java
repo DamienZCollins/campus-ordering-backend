@@ -3,6 +3,7 @@ package com.damien.campusordering.service;
 import com.damien.campusordering.dto.DishDTO;
 import com.damien.campusordering.dto.DishPageQueryDTO;
 import com.damien.campusordering.result.PageResult;
+import com.damien.campusordering.vo.DishVO;
 
 import java.util.List;
 
@@ -28,4 +29,12 @@ public interface DishService {
      * @param ids
      */
     void deleteBatch(List<Long> ids);
+
+    /**
+     * 根据id查询菜品和对应的口味
+     *
+     * @param id
+     * @return
+     */
+    DishVO getByIdWithFlavor(Long id);
 }
