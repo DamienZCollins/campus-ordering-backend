@@ -88,5 +88,11 @@ public class DishController {
      * @param dishDTO
      * @return
      */
+    @PutMapping
+    public Result<Void> update(@RequestBody DishDTO dishDTO) {
+        log.info("修改菜品{}", dishDTO);
+        dishService.updateWithFlavor(dishDTO);
+        return Result.success();
+    }
 
 }
