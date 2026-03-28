@@ -2,6 +2,7 @@ package com.damien.campusordering.controller.admin;
 
 import com.damien.campusordering.dto.DishDTO;
 import com.damien.campusordering.dto.DishPageQueryDTO;
+import com.damien.campusordering.entity.Dish;
 import com.damien.campusordering.result.PageResult;
 import com.damien.campusordering.result.Result;
 import com.damien.campusordering.service.DishService;
@@ -58,6 +59,18 @@ public class DishController {
     }
 
     /**
+     * 根据分类id查询菜品
+     *
+     * @param categoryId
+     * @return
+     */
+    @GetMapping("/list")
+    public Result<List<Dish>> list(@RequestParam("categoryId") Long categoryId) {
+        log.info("根据分类id查询菜品{}", categoryId);
+        return Result.success(dishService.list(categoryId));
+    }
+
+    /**
      * 根据id查询菜品和对应的口味
      *
      * @param id
@@ -68,4 +81,12 @@ public class DishController {
         log.info("根据id查询菜品信息{}", id);
         return Result.success(dishService.getByIdWithFlavor(id));
     }
+
+    /**
+     * 修改菜品
+     *
+     * @param dishDTO
+     * @return
+     */
+
 }

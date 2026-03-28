@@ -2,6 +2,7 @@ package com.damien.campusordering.service;
 
 import com.damien.campusordering.dto.DishDTO;
 import com.damien.campusordering.dto.DishPageQueryDTO;
+import com.damien.campusordering.entity.Dish;
 import com.damien.campusordering.result.PageResult;
 import com.damien.campusordering.vo.DishVO;
 
@@ -31,10 +32,19 @@ public interface DishService {
     void deleteBatch(List<Long> ids);
 
     /**
+     * 根据分类id查询菜品
+     *
+     * @param categoryId
+     * @return
+     */
+    List<Dish> list(Long categoryId);
+
+    /**
      * 根据id查询菜品和对应的口味
      *
      * @param id
      * @return
      */
     DishVO getByIdWithFlavor(Long id);
+
 }

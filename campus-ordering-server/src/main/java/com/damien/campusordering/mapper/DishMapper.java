@@ -7,6 +7,7 @@ import com.damien.campusordering.enumeration.OperationType;
 import com.damien.campusordering.vo.DishVO;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -42,6 +43,15 @@ public interface DishMapper {
      */
     @Select("select * from dish where id = #{id}")
     Dish getById(Long id);
+
+    /**
+     * 根据分类id查询菜品
+     *
+     * @param categoryId
+     * @return
+     */
+    @Select("select * from dish where category_id = #{categoryId} order by create_time desc")
+    List<Dish> list(@Param("categoryId") Long categoryId);
 
     /**
      * 批量删除菜品
