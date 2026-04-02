@@ -13,7 +13,6 @@ spring:
       host: ${campus.ordering.redis.host}
       port: ${campus.ordering.redis.port}
 
-
   datasource:
     druid:
       driver-class-name: ${campus.ordering.datasource.driver-class-name}
@@ -43,8 +42,16 @@ campus:
       admin-ttl: 7200000
       admin-token-name: token
 
+      user-secret-key: dGhpcyBpcyBhbiBleGFtcGxlIGtleSBmb3IgTmFjb3MgdG9rZW4=
+      user-ttl: 7200000
+      user-token-name: authentication
+
     alioss :
       endpoint: ${campus.ordering.alioss.endpoint}
       access-key-id: ${campus.ordering.alioss.accessKeyId}
       access-key-secret: ${campus.ordering.alioss.accessKeySecret}
       bucket-name: ${campus.ordering.alioss.bucketName}
+
+    wechat:
+      appid: ${campus.ordering.wechat.appid}
+      secret: ${campus.ordering.wechat.secret}

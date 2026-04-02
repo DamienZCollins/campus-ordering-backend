@@ -12,6 +12,9 @@ campus:
       access-key-id:
       access-key-secret:
       bucket-name:
+    wechat:
+      appid: wxa2875adad18a4383
+      secret: cc35085adb977c629ee5222bd8b1f343
 
 spring:
   data:
