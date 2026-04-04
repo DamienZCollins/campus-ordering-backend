@@ -21,6 +21,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -40,6 +42,8 @@ public class SetmealServiceImpl implements SetmealService {
     @Autowired
     private DishMapper dishMapper;
 
+
+    @Cacheable(value = "setmealCache", key = "#setmeal.categoryId")
     @Override
     public List<Setmeal> list(Setmeal setmeal) {
         return setmealMapper.list(setmeal);
@@ -50,7 +54,13 @@ public class SetmealServiceImpl implements SetmealService {
         return setmealMapper.getDishItemBySetmealId(id);
     }
 
+    /**
+     * 新增套餐
+     *
+     * @param setmealDTO
+     */
     @Transactional
+    @CacheEvict(value = "setmealCache", key = "#setmealDTO.categoryId")
     @Override
     public void saveWithDish(SetmealDTO setmealDTO) {
         if (CollectionUtils.isEmpty(setmealDTO.getSetmealDishes())) {
@@ -71,6 +81,12 @@ public class SetmealServiceImpl implements SetmealService {
         setmealDishMapper.insertBatch(setmealDishes);
     }
 
+    /**
+     * 套餐分页查询
+     *
+     * @param setmealPageQueryDTO
+     * @return
+     */
     @Override
     public PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
         PageHelper.startPage(setmealPageQueryDTO.getPage(), setmealPageQueryDTO.getPageSize());
@@ -78,7 +94,13 @@ public class SetmealServiceImpl implements SetmealService {
         return new PageResult(page.getTotal(), page.getResult());
     }
 
+    /**
+     * 批量删除套餐
+     *
+     * @param ids
+     */
     @Transactional
+    @CacheEvict(value = "setmealCache", allEntries = true)
     @Override
     public void deleteBatch(List<Long> ids) {
         for (Long id : ids) {
@@ -96,6 +118,12 @@ public class SetmealServiceImpl implements SetmealService {
         }
     }
 
+    /**
+     * 根据id查询套餐和套餐菜品关系
+     *
+     * @param id
+     * @return
+     */
     @Override
     public SetmealVO getByIdWithDish(Long id) {
         Setmeal setmeal = setmealMapper.getById(id);
@@ -109,7 +137,13 @@ public class SetmealServiceImpl implements SetmealService {
         return setmealVO;
     }
 
+    /**
+     * 修改套餐
+     *
+     * @param setmealDTO
+     */
     @Transactional
+    @CacheEvict(value = "setmealCache", allEntries = true)
     @Override
     public void update(SetmealDTO setmealDTO) {
         if (CollectionUtils.isEmpty(setmealDTO.getSetmealDishes())) {
@@ -128,7 +162,14 @@ public class SetmealServiceImpl implements SetmealService {
         setmealDishMapper.insertBatch(setmealDishes);
     }
 
+    /**
+     * 起售停售套餐
+     *
+     * @param status
+     * @param id
+     */
     @Override
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public void startOrStop(Integer status, Long id) {
         if (StatusConstant.ENABLE.equals(status)) {
             List<Dish> dishList = dishMapper.getBySetmealId(id);

@@ -18,6 +18,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +44,7 @@ public class DishServiceImpl implements DishService {
      * @param dishDTO
      */
     @Transactional
+    @CacheEvict(cacheNames = "dishCache", key = "#dishDTO.categoryId")
     @Override
     public void saveWithFlavor(DishDTO dishDTO) {
         log.info("新增菜品{}", dishDTO);
@@ -73,11 +76,12 @@ public class DishServiceImpl implements DishService {
     }
 
     /**
-     * 删除菜品
+     * 批量删除菜品
      *
      * @param ids
      */
     @Override
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     public void deleteBatch(List<Long> ids) {
         List<Dish> dishes = dishMapper.listByIds(ids);
         for (Dish dish : dishes) {
@@ -115,7 +119,12 @@ public class DishServiceImpl implements DishService {
      * @return
      */
     @Override
+    @Cacheable(cacheNames = "dishCache", key = "#dish.categoryId", condition = "#dish.status != null && #dish.status == T(com.damien.campusordering.constant.StatusConstant).ENABLE")
     public List<DishVO> listWithFlavor(Dish dish) {
+        return queryWithFlavor(dish);
+    }
+
+    private List<DishVO> queryWithFlavor(Dish dish) {
         List<DishVO> dishVOList = new ArrayList<>();
         //根据分类id查询菜品
         List<Dish> dishList = list(dish.getCategoryId());
@@ -160,6 +169,7 @@ public class DishServiceImpl implements DishService {
      * @param dishDTO
      */
     @Transactional
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     @Override
     public void updateWithFlavor(DishDTO dishDTO) {
         log.info("修改菜品{}", dishDTO);
@@ -188,6 +198,7 @@ public class DishServiceImpl implements DishService {
      * @param id
      */
     @Override
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     public void startOrStop(Integer status, Long id) {
         log.info("起售停售{}", id);
         Dish dish = Dish.builder()
@@ -195,6 +206,5 @@ public class DishServiceImpl implements DishService {
                 .status(status)
                 .build();
         dishMapper.update(dish);
-
     }
 }
