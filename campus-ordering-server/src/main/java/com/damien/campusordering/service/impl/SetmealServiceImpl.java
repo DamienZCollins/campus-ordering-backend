@@ -43,7 +43,7 @@ public class SetmealServiceImpl implements SetmealService {
     private DishMapper dishMapper;
 
 
-    @Cacheable(value = "setmealCache", key = "#setmeal.categoryId")
+    @Cacheable(cacheNames = "setmealCache", key = "#setmeal.categoryId")
     @Override
     public List<Setmeal> list(Setmeal setmeal) {
         return setmealMapper.list(setmeal);
@@ -60,7 +60,7 @@ public class SetmealServiceImpl implements SetmealService {
      * @param setmealDTO
      */
     @Transactional
-    @CacheEvict(value = "setmealCache", key = "#setmealDTO.categoryId")
+    @CacheEvict(cacheNames = "setmealCache", key = "#setmealDTO.categoryId")
     @Override
     public void saveWithDish(SetmealDTO setmealDTO) {
         if (CollectionUtils.isEmpty(setmealDTO.getSetmealDishes())) {
@@ -100,7 +100,7 @@ public class SetmealServiceImpl implements SetmealService {
      * @param ids
      */
     @Transactional
-    @CacheEvict(value = "setmealCache", allEntries = true)
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     @Override
     public void deleteBatch(List<Long> ids) {
         for (Long id : ids) {
@@ -143,7 +143,7 @@ public class SetmealServiceImpl implements SetmealService {
      * @param setmealDTO
      */
     @Transactional
-    @CacheEvict(value = "setmealCache", allEntries = true)
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     @Override
     public void update(SetmealDTO setmealDTO) {
         if (CollectionUtils.isEmpty(setmealDTO.getSetmealDishes())) {
@@ -169,7 +169,7 @@ public class SetmealServiceImpl implements SetmealService {
      * @param id
      */
     @Override
-    @CacheEvict(value = "setmealCache", allEntries = true)
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public void startOrStop(Integer status, Long id) {
         if (StatusConstant.ENABLE.equals(status)) {
             List<Dish> dishList = dishMapper.getBySetmealId(id);

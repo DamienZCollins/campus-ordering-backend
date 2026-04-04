@@ -1,20 +1,22 @@
 package com.damien.campusordering.service.impl;
 
 import com.damien.campusordering.service.ShopService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-/**
- * 营业状态缓存服务实现。
- */
 @Service
+@Slf4j
 public class ShopServiceImpl implements ShopService {
 
+    private static final Integer DEFAULT_STATUS = 0;
+
     @Override
-    @Cacheable(cacheNames = "shopCache", key = "'status'")
+    @Cacheable(cacheNames = "shopCache", key = "'status'", unless = "#result == null")
     public Integer getStatus() {
-        return null;
+        log.warn("Redis缓存未命中且无数据库回源，返回默认营业状态");
+        return DEFAULT_STATUS;
     }
 
     @Override

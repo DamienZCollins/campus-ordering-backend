@@ -9,11 +9,12 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 
-/**
- * Spring Cache 配置。
- */
+import java.time.Duration;
+
 @Configuration
 public class CacheConfiguration {
+
+    private static final Duration DEFAULT_TTL = Duration.ofMinutes(60);
 
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
@@ -25,7 +26,8 @@ public class CacheConfiguration {
         RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(jsonSerializer))
-                .disableCachingNullValues();
+                .disableCachingNullValues()
+                .entryTtl(DEFAULT_TTL);
 
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(cacheConfiguration)

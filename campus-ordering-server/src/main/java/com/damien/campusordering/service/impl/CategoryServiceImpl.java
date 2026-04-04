@@ -2,7 +2,6 @@ package com.damien.campusordering.service.impl;
 
 import com.damien.campusordering.constant.MessageConstant;
 import com.damien.campusordering.constant.StatusConstant;
-import com.damien.campusordering.context.BaseContext;
 import com.damien.campusordering.convert.CategoryConvert;
 import com.damien.campusordering.dto.CategoryDTO;
 import com.damien.campusordering.dto.CategoryPageQueryDTO;
@@ -16,9 +15,9 @@ import com.damien.campusordering.service.CategoryService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -55,6 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param categoryDTO
      */
     @Override
+    @CacheEvict(cacheNames = {"dishCache", "setmealCache"}, allEntries = true)
     public void save(CategoryDTO categoryDTO) {
         Category category = categoryConvert.toEntity(categoryDTO);
         //分类状态默认为禁用状态0
@@ -67,6 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
      *
      * @param categoryDTO
      */
+    @CacheEvict(cacheNames = {"dishCache", "setmealCache"}, allEntries = true)
     @Override
     public void update(CategoryDTO categoryDTO) {
         Category category = categoryConvert.toEntity(categoryDTO);
@@ -79,6 +80,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param status
      * @param id
      */
+    @CacheEvict(cacheNames = {"dishCache", "setmealCache"}, allEntries = true)
     @Override
     public void startOrStop(Integer status, Long id) {
         Category category = Category.builder()
@@ -104,6 +106,7 @@ public class CategoryServiceImpl implements CategoryService {
      *
      * @param id
      */
+    @CacheEvict(cacheNames = {"dishCache", "setmealCache"}, allEntries = true)
     @Override
     public void deleteById(Long id) {
         //查询当前分类是否关联了菜品
