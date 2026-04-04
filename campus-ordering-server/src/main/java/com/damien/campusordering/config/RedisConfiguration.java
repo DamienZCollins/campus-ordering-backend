@@ -1,5 +1,6 @@
 package com.damien.campusordering.config;
 
+import com.damien.campusordering.json.JacksonObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,11 +39,16 @@ public class RedisConfiguration {
         // hash 的 key 也统一使用字符串序列化
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
 
-        // value 使用 JSON 序列化，方便存对象，也避免只能存字符串
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        // value 使用带 Java 时间支持的 JSON 序列化，避免 LocalDateTime 直接报错
+        GenericJackson2JsonRedisSerializer jsonSerializer = GenericJackson2JsonRedisSerializer.builder()
+                .objectMapper(new JacksonObjectMapper())
+                .defaultTyping(true)
+                .build();
 
-        // hash 的 value 也使用 JSON 序列化，保证数据结构统一
-        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.setValueSerializer(jsonSerializer);
+
+        // hash 的 value 也使用同一套 JSON 序列化，保证数据结构统一
+        redisTemplate.setHashValueSerializer(jsonSerializer);
 
         // 让上面的序列化配置正式生效
         redisTemplate.afterPropertiesSet();
