@@ -19,6 +19,8 @@ public class MessageConstant {
     public static final String LOGIN_FAILED = "登录失败";
     public static final String UPLOAD_FAILED = "文件上传失败";
     public static final String SETMEAL_ENABLE_FAILED = "套餐中包含未启售菜品，无法启售";
+    public static final String SETMEAL_MUST_HAVE_DISH = "套餐必须包含菜品";
+    public static final String SETMEAL_NOT_FOUND = "套餐不存在";
     public static final String PASSWORD_EDIT_FAILED = "密码修改失败";
     public static final String DISH_ON_SALE = "起售中的菜品不能删除";
     public static final String SETMEAL_ON_SALE = "起售中的套餐不能删除";

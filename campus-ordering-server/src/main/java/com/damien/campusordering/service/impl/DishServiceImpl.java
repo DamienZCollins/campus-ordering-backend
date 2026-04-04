@@ -79,22 +79,17 @@ public class DishServiceImpl implements DishService {
      */
     @Override
     public void deleteBatch(List<Long> ids) {
-        //判断是否起售
-        for (Long id : ids) {
-            Dish dish = dishMapper.getById(id);
+        List<Dish> dishes = dishMapper.listByIds(ids);
+        for (Dish dish : dishes) {
             if (StatusConstant.ENABLE.equals(dish.getStatus())) {
                 throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
             }
         }
-        //判断是否被套餐关联
         List<Long> setmealIds = setmealDishMapper.getSetmealIdsByDishId(ids);
         if (setmealIds != null && !setmealIds.isEmpty()) {
-            //起售中的套餐
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
-        //删除菜品数据
         dishMapper.deleteBatch(ids);
-        //删除菜品口味数据
         dishFlavorsMapper.deleteByDishIds(ids);
     }
 
@@ -106,7 +101,11 @@ public class DishServiceImpl implements DishService {
      */
     @Override
     public List<Dish> list(Long categoryId) {
-        return dishMapper.list(categoryId);
+        Dish dish = Dish.builder()
+                .categoryId(categoryId)
+                .status(StatusConstant.ENABLE)
+                .build();
+        return dishMapper.list(dish);
     }
 
     /**

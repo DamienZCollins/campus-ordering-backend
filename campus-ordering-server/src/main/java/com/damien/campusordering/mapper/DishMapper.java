@@ -7,7 +7,6 @@ import com.damien.campusordering.enumeration.OperationType;
 import com.damien.campusordering.vo.DishVO;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -45,13 +44,29 @@ public interface DishMapper {
     Dish getById(Long id);
 
     /**
-     * 根据分类id查询菜品
+     * 批量查询菜品状态
      *
-     * @param categoryId
+     * @param ids 菜品ID列表
+     * @return 菜品列表
+     */
+    List<Dish> listByIds(List<Long> ids);
+
+    /**
+     * 动态条件查询菜品
+     *
+     * @param dish 查询条件（可含 categoryId、status、name）
      * @return
      */
-    @Select("select * from dish where category_id = #{categoryId} order by create_time desc")
-    List<Dish> list(@Param("categoryId") Long categoryId);
+    List<Dish> list(Dish dish);
+
+    /**
+     * 根据套餐 id 查询关联菜品（用于套餐起售校验）
+     *
+     * @param setmealId 套餐 id
+     * @return
+     */
+    @Select("select a.* from dish a left join setmeal_dish b on a.id = b.dish_id where b.setmeal_id = #{setmealId}")
+    List<Dish> getBySetmealId(Long setmealId);
 
     /**
      * 批量删除菜品
