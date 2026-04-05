@@ -5,6 +5,7 @@
 *Test.java
 **/test/
 .vscode/
-/Agent.md
+.cursor/
+.trae/
 AGENTS.md
 CLAUDE.md
