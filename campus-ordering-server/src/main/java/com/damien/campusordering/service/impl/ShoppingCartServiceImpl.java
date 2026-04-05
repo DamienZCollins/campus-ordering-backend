@@ -28,6 +28,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Autowired
     private SetmealMapper setmealMapper;
 
+    /**
+     * 添加购物车
+     *
+     * @param shoppingCartDTO
+     */
     @Override
     @Transactional
     public void add(ShoppingCartDTO shoppingCartDTO) {
