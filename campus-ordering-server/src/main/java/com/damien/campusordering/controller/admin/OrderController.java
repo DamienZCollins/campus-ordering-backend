@@ -65,7 +65,7 @@ public class OrderController {
      * @return
      */
     @PutMapping("/confirm")
-    public Result confirm(@RequestBody OrdersConfirmDTO ordersConfirmDTO) {
+    public Result<Void> confirm(@RequestBody OrdersConfirmDTO ordersConfirmDTO) {
         orderService.confirm(ordersConfirmDTO);
         return Result.success();
     }
@@ -76,7 +76,7 @@ public class OrderController {
      * @return
      */
     @PutMapping("/rejection")
-    public Result rejection(@RequestBody OrdersRejectionDTO ordersRejectionDTO) throws Exception {
+    public Result<Void> rejection(@RequestBody OrdersRejectionDTO ordersRejectionDTO) throws Exception {
         orderService.rejection(ordersRejectionDTO);
         return Result.success();
     }
@@ -87,7 +87,7 @@ public class OrderController {
      * @return
      */
     @PutMapping("/cancel")
-    public Result cancel(@RequestBody OrdersCancelDTO ordersCancelDTO) throws Exception {
+    public Result<Void> cancel(@RequestBody OrdersCancelDTO ordersCancelDTO) throws Exception {
         orderService.cancel(ordersCancelDTO);
         return Result.success();
     }
@@ -98,7 +98,7 @@ public class OrderController {
      * @return
      */
     @PutMapping("/delivery/{id}")
-    public Result delivery(@PathVariable("id") Long id) {
+    public Result<Void> delivery(@PathVariable("id") Long id) {
         orderService.delivery(id);
         return Result.success();
     }
@@ -109,7 +109,7 @@ public class OrderController {
      * @return
      */
     @PutMapping("/complete/{id}")
-    public Result complete(@PathVariable("id") Long id) {
+    public Result<Void> complete(@PathVariable("id") Long id) {
         orderService.complete(id);
         return Result.success();
     }

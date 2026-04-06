@@ -62,7 +62,7 @@ campus:
       weChatPayCertFilePath: ${campus.ordering.wechat.weChatPayCertFilePath}
       notifyUrl: ${campus.ordering.wechat.notifyUrl}
 
-  shop:
-    address: ${campus.ordering.shop.address}
-  baidu:
-    ak: ${campus.ordering.baidu.ak}
+    shop:
+      address: ${campus.ordering.shop.address}
+    baidu:
+      ak: ${campus.ordering.baidu.ak}

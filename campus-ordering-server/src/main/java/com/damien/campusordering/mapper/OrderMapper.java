@@ -1,6 +1,8 @@
 package com.damien.campusordering.mapper;
 
+import com.damien.campusordering.dto.OrdersPageQueryDTO;
 import com.damien.campusordering.entity.Orders;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -61,7 +63,7 @@ public interface OrderMapper {
      *
      * @param ordersPageQueryDTO
      */
-    com.github.pagehelper.Page<Orders> pageQuery(com.damien.campusordering.dto.OrdersPageQueryDTO ordersPageQueryDTO);
+    Page<Orders> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 
     /**
      * 根据id查询订单

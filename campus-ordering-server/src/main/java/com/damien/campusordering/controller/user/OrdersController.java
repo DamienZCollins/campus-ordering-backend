@@ -79,7 +79,7 @@ public class OrdersController {
      * @return
      */
     @PutMapping("/cancel/{id}")
-    public Result cancel(@PathVariable("id") Long id) throws Exception {
+    public Result<Void> cancel(@PathVariable("id") Long id) throws Exception {
         orderService.userCancelById(id);
         return Result.success();
     }
@@ -91,7 +91,7 @@ public class OrdersController {
      * @return
      */
     @PostMapping("/repetition/{id}")
-    public Result repetition(@PathVariable Long id) {
+    public Result<Void> repetition(@PathVariable Long id) {
         orderService.repetition(id);
         return Result.success();
     }
