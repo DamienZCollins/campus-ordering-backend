@@ -3,6 +3,7 @@ package com.damien.campusordering.controller.admin;
 import com.damien.campusordering.result.Result;
 import com.damien.campusordering.service.ReportService;
 import com.damien.campusordering.vo.TurnoverReportVO;
+import com.damien.campusordering.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -30,8 +31,25 @@ public class ReportController {
     @GetMapping("/turnoverStatistics")
     public Result<TurnoverReportVO> turnoverStatistics(
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end) {
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end
+    ) {
         log.info("统计营业额：begin={}, end={}", begin, end);
         return Result.success(reportService.getTurnoverStatistics(begin, end));
+    }
+
+    /**
+     * 用户统计
+     *
+     * @param begin 开始日期
+     * @param end   结束日期
+     * @return 用户统计数据
+     */
+    @GetMapping("/userStatistics")
+    public Result<UserReportVO> userStatistics(
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end
+    ) {
+        log.info("统计用户：begin={}, end={}", begin, end);
+        return Result.success(reportService.getUserStatistics(begin, end));
     }
 }
