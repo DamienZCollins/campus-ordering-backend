@@ -9,11 +9,22 @@ import com.damien.campusordering.vo.OrderReportVO;
 import com.damien.campusordering.vo.SalesTop10ReportVO;
 import com.damien.campusordering.vo.TurnoverReportVO;
 import com.damien.campusordering.vo.UserReportVO;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -227,5 +238,189 @@ public class ReportServiceImpl implements ReportService {
             currentDate = currentDate.plusDays(1);
         }
         return dateList;
+    }
+
+    /**
+     * 导出最近30天的运营数据报表为 Excel 文件
+     * 使用模板填充方式生成报表
+     *
+     * @param response HTTP 响应对象，用于输出 Excel 文件流
+     * @throws IOException 当写入响应流失败时抛出
+     */
+    @Override
+    public void exportBusinessData(HttpServletResponse response) throws IOException {
+        // 1. 计算最近30天的日期范围
+        LocalDate endDate = LocalDate.now().minusDays(1);
+        LocalDate beginDate = endDate.minusDays(29);
+
+        log.info("导出运营数据报表，日期范围：{} 至 {}", beginDate, endDate);
+
+        // 2. 获取日期列表
+        List<LocalDate> dateList = buildDateList(beginDate, endDate);
+        LocalDateTime beginTime = LocalDateTime.of(dateList.get(0), LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(dateList.get(dateList.size() - 1), LocalTime.MAX);
+
+        // 3. 查询营业额数据
+        List<Map<String, Object>> turnoverDataList = orderMapper.getTurnoverByDateRange(beginTime, endTime, Orders.COMPLETED);
+        Map<String, Double> turnoverMap = new HashMap<>();
+        for (Map<String, Object> data : turnoverDataList) {
+            String date = data.get("date").toString();
+            Double turnover = ((Number) data.get("turnover")).doubleValue();
+            turnoverMap.put(date, turnover);
+        }
+
+        // 4. 查询订单统计数据
+        List<Map<String, Object>> orderDataList = orderMapper.getOrderStatisticsByDateRange(beginTime, endTime);
+        Map<String, Map<String, Object>> orderStatsMap = new HashMap<>();
+        for (Map<String, Object> data : orderDataList) {
+            String date = data.get("date").toString();
+            orderStatsMap.put(date, data);
+        }
+
+        // 5. 查询用户统计数据
+        List<Map<String, Object>> userDataList = userMapper.getUserStatisticsByDateRange(beginTime, endTime);
+        Map<String, Integer> newUserMap = new HashMap<>();
+        for (Map<String, Object> data : userDataList) {
+            String date = data.get("date").toString();
+            Integer newUserCount = ((Number) data.get("newUserCount")).intValue();
+            newUserMap.put(date, newUserCount);
+        }
+
+        // 6. 构建明细数据列表
+        List<DetailData> detailDataList = new ArrayList<>();
+        double totalTurnover = 0.0;
+        int totalValidOrders = 0;
+        int totalOrders = 0;
+        int totalNewUsers = 0;
+
+        for (LocalDate date : dateList) {
+            String dateStr = date.toString();
+
+            Double turnover = turnoverMap.getOrDefault(dateStr, 0.0);
+            totalTurnover += turnover;
+
+            Map<String, Object> orderStats = orderStatsMap.get(dateStr);
+            int orderCount = 0;
+            int validOrderCount = 0;
+            double orderCompletionRate = 0.0;
+            double averagePrice = 0.0;
+
+            if (orderStats != null) {
+                orderCount = ((Number) orderStats.get("totalOrderCount")).intValue();
+                validOrderCount = ((Number) orderStats.get("validOrderCount")).intValue();
+                totalOrders += orderCount;
+                totalValidOrders += validOrderCount;
+
+                if (orderCount > 0) {
+                    orderCompletionRate = (double) validOrderCount / orderCount;
+                }
+                if (validOrderCount > 0) {
+                    averagePrice = turnover / validOrderCount;
+                }
+            }
+
+            Integer newUsers = newUserMap.getOrDefault(dateStr, 0);
+            totalNewUsers += newUsers;
+
+            DetailData detail = new DetailData();
+            detail.setDate(dateStr);
+            detail.setTurnover(String.format("%.2f", turnover));
+            detail.setValidOrders(String.valueOf(validOrderCount));
+            detail.setOrderCompletionRate(String.format("%.2f%%", orderCompletionRate * 100));
+            detail.setAveragePrice(String.format("%.2f", averagePrice));
+            detail.setNewUsers(String.valueOf(newUsers));
+            detailDataList.add(detail);
+        }
+
+        // 7. 计算概览数据
+        double totalOrderCompletionRate = totalOrders == 0 ? 0.0 : (double) totalValidOrders / totalOrders;
+        double totalAveragePrice = totalValidOrders == 0 ? 0.0 : totalTurnover / totalValidOrders;
+
+        OverviewData overview = new OverviewData();
+        overview.setTurnover(String.format("%.2f", totalTurnover));
+        overview.setOrderCompletionRate(String.format("%.2f%%", totalOrderCompletionRate * 100));
+        overview.setNewUsers(String.valueOf(totalNewUsers));
+        overview.setValidOrders(String.valueOf(totalValidOrders));
+        overview.setAveragePrice(String.format("%.2f", totalAveragePrice));
+
+        // 8. 设置响应头
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode("运营数据报表", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+
+        // 9. 使用模板填充数据（自动匹配 template 目录下首个 xlsx，规避文件名编码差异）
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        Resource[] templateResources = resolver.getResources("classpath*:template/*.xlsx");
+        if (templateResources == null || templateResources.length == 0) {
+            log.error("模板文件不存在：classpath*:template/*.xlsx");
+            throw new IOException("模板文件不存在");
+        }
+
+        try (InputStream templateInputStream = templateResources[0].getInputStream();
+             Workbook workbook = WorkbookFactory.create(templateInputStream)) {
+            Sheet sheet = workbook.getSheetAt(0);
+
+            // 概览数据写入（模板固定位置）
+            setCellValue(sheet, 3, 2, overview.getTurnover());            // C4
+            setCellValue(sheet, 3, 4, overview.getOrderCompletionRate()); // E4
+            setCellValue(sheet, 3, 6, overview.getNewUsers());            // G4
+            setCellValue(sheet, 4, 2, overview.getValidOrders());         // C5
+            setCellValue(sheet, 4, 4, overview.getAveragePrice());        // E5
+
+            // 明细数据从第8行开始写入（模板第7行为表头）
+            int startRowIndex = 7;
+            for (int i = 0; i < detailDataList.size(); i++) {
+                DetailData detail = detailDataList.get(i);
+                int rowIndex = startRowIndex + i;
+                setCellValue(sheet, rowIndex, 1, detail.getDate());                // B列
+                setCellValue(sheet, rowIndex, 2, detail.getTurnover());            // C列
+                setCellValue(sheet, rowIndex, 3, detail.getValidOrders());         // D列
+                setCellValue(sheet, rowIndex, 4, detail.getOrderCompletionRate()); // E列
+                setCellValue(sheet, rowIndex, 5, detail.getAveragePrice());        // F列
+                setCellValue(sheet, rowIndex, 6, detail.getNewUsers());            // G列
+            }
+
+            workbook.write(response.getOutputStream());
+        }
+    }
+
+    private void setCellValue(Sheet sheet, int rowIndex, int colIndex, String value) {
+        Row row = sheet.getRow(rowIndex);
+        if (row == null) {
+            row = sheet.createRow(rowIndex);
+        }
+        Cell cell = row.getCell(colIndex);
+        if (cell == null) {
+            cell = row.createCell(colIndex);
+        }
+        cell.setCellValue(value);
+    }
+
+    /**
+     * 概览数据
+     */
+    @Data
+    public static class OverviewData {
+        private String turnover;
+        private String orderCompletionRate;
+        private String newUsers;
+        private String validOrders;
+        private String averagePrice;
+    }
+
+    /**
+     * 明细数据
+     */
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class DetailData {
+        private String date;
+        private String turnover;
+        private String validOrders;
+        private String orderCompletionRate;
+        private String averagePrice;
+        private String newUsers;
     }
 }

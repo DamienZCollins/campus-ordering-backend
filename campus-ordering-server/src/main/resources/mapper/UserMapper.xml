@@ -9,16 +9,18 @@
     </insert>
 
     <select id="getUserStatisticsByDateRange" resultType="java.util.HashMap">
-        select DATE(create_time)                                                                                 as date,
-               count(*)                                                                                          as newUserCount,
+        select daily.date                                                       as date,
+               daily.newUserCount                                               as newUserCount,
                (select count(*)
-                from user
-                where create_time &lt;= DATE_ADD(DATE(u.create_time), INTERVAL 1 DAY))                           as totalUserCount
-        from user u
-        where create_time &gt;= #{begin}
-          and create_time &lt;= #{end}
-        group by DATE(create_time)
-        order by DATE(create_time)
+                from user u2
+                where u2.create_time &lt; DATE_ADD(daily.date, INTERVAL 1 DAY)) as totalUserCount
+        from (select DATE(u.create_time) as date,
+                     count(*)            as newUserCount
+              from user u
+              where u.create_time &gt;= #{begin}
+                and u.create_time &lt;= #{end}
+              group by DATE(u.create_time)) daily
+        order by daily.date
     </select>
 
     <select id="countByMap" resultType="java.lang.Integer">

@@ -4,7 +4,9 @@ import com.damien.campusordering.vo.OrderReportVO;
 import com.damien.campusordering.vo.SalesTop10ReportVO;
 import com.damien.campusordering.vo.TurnoverReportVO;
 import com.damien.campusordering.vo.UserReportVO;
+import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 public interface ReportService {
@@ -43,4 +45,12 @@ public interface ReportService {
      * @return 销量排行报表数据
      */
     SalesTop10ReportVO getSalesTop10Statistics(LocalDate begin, LocalDate end);
+
+    /**
+     * 导出最近30天的运营数据报表为 Excel 文件
+     *
+     * @param response HTTP 响应对象，用于输出 Excel 文件流
+     * @throws IOException 当写入响应流失败时抛出
+     */
+    void exportBusinessData(HttpServletResponse response) throws IOException;
 }
