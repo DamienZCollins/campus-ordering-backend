@@ -89,4 +89,15 @@
         group by DATE(order_time)
         order by DATE(order_time)
     </select>
+
+    <select id="getOrderStatisticsByDateRange" resultType="java.util.HashMap">
+        select DATE(order_time)                            as date,
+               count(*)                                    as totalOrderCount,
+               sum(case when status = 5 then 1 else 0 end) as validOrderCount
+        from orders
+        where order_time &gt;= #{begin}
+          and order_time &lt;= #{end}
+        group by DATE(order_time)
+        order by DATE(order_time)
+    </select>
 </mapper>

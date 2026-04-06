@@ -95,4 +95,14 @@ public interface OrderMapper {
     List<Map<String, Object>> getTurnoverByDateRange(@Param("begin") LocalDateTime begin,
                                                      @Param("end") LocalDateTime end,
                                                      @Param("status") Integer status);
+
+    /**
+     * 根据时间范围统计订单数据（按天分组）
+     *
+     * @param begin 开始时间
+     * @param end   结束时间
+     * @return 每天的订单统计列表
+     */
+    List<Map<String, Object>> getOrderStatisticsByDateRange(@Param("begin") LocalDateTime begin,
+                                                            @Param("end") LocalDateTime end);
 }

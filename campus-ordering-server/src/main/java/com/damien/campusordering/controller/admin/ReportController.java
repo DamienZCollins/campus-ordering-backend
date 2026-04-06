@@ -2,6 +2,7 @@ package com.damien.campusordering.controller.admin;
 
 import com.damien.campusordering.result.Result;
 import com.damien.campusordering.service.ReportService;
+import com.damien.campusordering.vo.OrderReportVO;
 import com.damien.campusordering.vo.TurnoverReportVO;
 import com.damien.campusordering.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
@@ -51,5 +52,21 @@ public class ReportController {
     ) {
         log.info("统计用户：begin={}, end={}", begin, end);
         return Result.success(reportService.getUserStatistics(begin, end));
+    }
+
+    /**
+     * 订单统计
+     *
+     * @param begin 开始日期
+     * @param end   结束日期
+     * @return 订单统计数据
+     */
+    @GetMapping("/ordersStatistics")
+    public Result<OrderReportVO> ordersStatistics(
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end
+    ) {
+        log.info("统计订单：begin={}, end={}", begin, end);
+        return Result.success(reportService.getOrderStatistics(begin, end));
     }
 }

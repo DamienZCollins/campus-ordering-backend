@@ -1,5 +1,6 @@
 package com.damien.campusordering.service;
 
+import com.damien.campusordering.vo.OrderReportVO;
 import com.damien.campusordering.vo.TurnoverReportVO;
 import com.damien.campusordering.vo.UserReportVO;
 
@@ -23,4 +24,13 @@ public interface ReportService {
      * @return 用户报表数据
      */
     UserReportVO getUserStatistics(LocalDate begin, LocalDate end);
+
+    /**
+     * 统计指定时间区间内的订单数据
+     *
+     * @param begin 开始日期
+     * @param end   结束日期
+     * @return 订单报表数据
+     */
+    OrderReportVO getOrderStatistics(LocalDate begin, LocalDate end);
 }
