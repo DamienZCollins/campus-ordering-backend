@@ -79,4 +79,14 @@
         </where>
         order by order_time desc
     </select>
+
+    <select id="getTurnoverByDateRange" resultType="java.util.HashMap">
+        select DATE(order_time) as date, sum(amount) as turnover
+        from orders
+        where status = #{status}
+          and order_time &gt;= #{begin}
+          and order_time &lt;= #{end}
+        group by DATE(order_time)
+        order by DATE(order_time)
+    </select>
 </mapper>

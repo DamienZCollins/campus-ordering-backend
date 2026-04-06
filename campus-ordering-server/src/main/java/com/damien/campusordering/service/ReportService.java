@@ -1,0 +1,16 @@
+package com.damien.campusordering.service;
+
+import com.damien.campusordering.vo.TurnoverReportVO;
+
+import java.time.LocalDate;
+
+public interface ReportService {
+    /**
+     * 统计指定时间区间内的营业额数据
+     *
+     * @param begin 开始日期
+     * @param end   结束日期
+     * @return 营业额报表数据
+     */
+    TurnoverReportVO getTurnoverStatistics(LocalDate begin, LocalDate end);
+}
