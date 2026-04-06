@@ -22,9 +22,14 @@ campus:
       weChatPayCertFilePath:
       notifyUrl:
 
+    # Shop configuration
+    shop:
+      address: 北京市中山路1号
+    baidu:
+      ak: default_ak
+
 spring:
   data:
     redis:
       host: 127.0.0.1
       port: 16379
-

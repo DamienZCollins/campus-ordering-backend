@@ -61,3 +61,8 @@ campus:
       apiV3Key: ${campus.ordering.wechat.apiV3Key}
       weChatPayCertFilePath: ${campus.ordering.wechat.weChatPayCertFilePath}
       notifyUrl: ${campus.ordering.wechat.notifyUrl}
+
+  shop:
+    address: ${campus.ordering.shop.address}
+  baidu:
+    ak: ${campus.ordering.baidu.ak}
