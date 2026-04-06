@@ -1,5 +1,6 @@
 package com.damien.campusordering.mapper;
 
+import com.damien.campusordering.dto.GoodsSalesDTO;
 import com.damien.campusordering.dto.OrdersPageQueryDTO;
 import com.damien.campusordering.entity.Orders;
 import com.github.pagehelper.Page;
@@ -105,4 +106,16 @@ public interface OrderMapper {
      */
     List<Map<String, Object>> getOrderStatisticsByDateRange(@Param("begin") LocalDateTime begin,
                                                             @Param("end") LocalDateTime end);
+
+    /**
+     * 根据时间范围统计销量前10的商品数据
+     *
+     * @param begin  开始时间
+     * @param end    结束时间
+     * @param status 订单状态
+     * @return 销量前10的商品列表
+     */
+    List<GoodsSalesDTO> getSalesTop10ByDateRange(@Param("begin") LocalDateTime begin,
+                                                 @Param("end") LocalDateTime end,
+                                                 @Param("status") Integer status);
 }

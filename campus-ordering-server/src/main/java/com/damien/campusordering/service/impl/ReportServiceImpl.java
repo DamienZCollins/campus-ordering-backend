@@ -1,10 +1,12 @@
 package com.damien.campusordering.service.impl;
 
+import com.damien.campusordering.dto.GoodsSalesDTO;
 import com.damien.campusordering.entity.Orders;
 import com.damien.campusordering.mapper.OrderMapper;
 import com.damien.campusordering.mapper.UserMapper;
 import com.damien.campusordering.service.ReportService;
 import com.damien.campusordering.vo.OrderReportVO;
+import com.damien.campusordering.vo.SalesTop10ReportVO;
 import com.damien.campusordering.vo.TurnoverReportVO;
 import com.damien.campusordering.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
@@ -180,6 +182,39 @@ public class ReportServiceImpl implements ReportService {
                 .totalOrderCount(totalOrderCount)
                 .validOrderCount(validOrderCount)
                 .orderCompletionRate(orderCompletionRate)
+                .build();
+    }
+
+    /**
+     * 统计指定时间区间内的销量排行数据
+     *
+     * @param begin 开始日期
+     * @param end   结束日期
+     * @return 销量排行报表数据
+     */
+    @Override
+    public SalesTop10ReportVO getSalesTop10Statistics(LocalDate begin, LocalDate end) {
+        log.info("统计销量TOP10，开始日期：{}，结束日期：{}", begin, end);
+        // 将日期转换成完整的时间范围
+        LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+
+        // 只统计已完成订单中的商品销量
+        // 一次性查出销量前10的商品数据
+        List<GoodsSalesDTO> salesTop10List = orderMapper.getSalesTop10ByDateRange(beginTime, endTime, Orders.COMPLETED);
+
+        // 拆分成前端需要的两个列表
+        List<String> nameList = new ArrayList<>();
+        List<Integer> numberList = new ArrayList<>();
+        for (GoodsSalesDTO goodsSalesDTO : salesTop10List) {
+            nameList.add(goodsSalesDTO.getName());
+            numberList.add(goodsSalesDTO.getNumber());
+        }
+
+        return SalesTop10ReportVO
+                .builder()
+                .nameList(StringUtils.join(nameList, ","))
+                .numberList(StringUtils.join(numberList, ","))
                 .build();
     }
 

@@ -3,6 +3,7 @@ package com.damien.campusordering.controller.admin;
 import com.damien.campusordering.result.Result;
 import com.damien.campusordering.service.ReportService;
 import com.damien.campusordering.vo.OrderReportVO;
+import com.damien.campusordering.vo.SalesTop10ReportVO;
 import com.damien.campusordering.vo.TurnoverReportVO;
 import com.damien.campusordering.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
@@ -68,5 +69,21 @@ public class ReportController {
     ) {
         log.info("统计订单：begin={}, end={}", begin, end);
         return Result.success(reportService.getOrderStatistics(begin, end));
+    }
+
+    /**
+     * 销量排行TOP10
+     *
+     * @param begin 开始日期
+     * @param end   结束日期
+     * @return 销量排行数据
+     */
+    @GetMapping("/top10")
+    public Result<SalesTop10ReportVO> top10Statistics(
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end
+    ) {
+        log.info("统计销量TOP10：begin={}, end={}", begin, end);
+        return Result.success(reportService.getSalesTop10Statistics(begin, end));
     }
 }
