@@ -118,4 +118,20 @@ public interface OrderMapper {
     List<GoodsSalesDTO> getSalesTop10ByDateRange(@Param("begin") LocalDateTime begin,
                                                  @Param("end") LocalDateTime end,
                                                  @Param("status") Integer status);
+
+    /**
+     * 根据条件统计订单数量
+     *
+     * @param map 查询条件（可含 begin, end, status）
+     * @return 订单数量
+     */
+    Integer countByMap(Map map);
+
+    /**
+     * 根据条件统计营业额
+     *
+     * @param map 查询条件（可含 begin, end, status）
+     * @return 营业额
+     */
+    Double sumByMap(Map map);
 }

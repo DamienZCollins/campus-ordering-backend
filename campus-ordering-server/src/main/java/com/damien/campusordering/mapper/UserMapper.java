@@ -31,4 +31,12 @@ public interface UserMapper {
     @MapKey("date")
     List<Map<String, Object>> getUserStatisticsByDateRange(@Param("begin") LocalDateTime begin,
                                                            @Param("end") LocalDateTime end);
+
+    /**
+     * 根据时间范围统计用户数量
+     *
+     * @param map 查询条件（可含 begin, end）
+     * @return 用户数量
+     */
+    Integer countByMap(Map map);
 }

@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface SetmealMapper {
@@ -82,4 +83,12 @@ public interface SetmealMapper {
      * @return
      */
     Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
+
+    /**
+     * 根据条件统计套餐数量
+     *
+     * @param map 查询条件（可含 status, categoryId）
+     * @return 套餐数量
+     */
+    Integer countByMap(Map map);
 }
