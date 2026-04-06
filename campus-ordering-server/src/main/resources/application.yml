@@ -55,3 +55,9 @@ campus:
     wechat:
       appid: ${campus.ordering.wechat.appid}
       secret: ${campus.ordering.wechat.secret}
+      mchid: ${campus.ordering.wechat.mchid}
+      mchSerialNo: ${campus.ordering.wechat.mchSerialNo}
+      privateKeyFilePath: ${campus.ordering.wechat.privateKeyFilePath}
+      apiV3Key: ${campus.ordering.wechat.apiV3Key}
+      weChatPayCertFilePath: ${campus.ordering.wechat.weChatPayCertFilePath}
+      notifyUrl: ${campus.ordering.wechat.notifyUrl}
