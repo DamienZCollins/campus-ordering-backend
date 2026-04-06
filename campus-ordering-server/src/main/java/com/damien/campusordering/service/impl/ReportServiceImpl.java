@@ -40,13 +40,16 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public TurnoverReportVO getTurnoverStatistics(LocalDate begin, LocalDate end) {
         log.info("统计营业额，开始日期：{}，结束日期：{}", begin, end);
+        // 先补齐时间区间内的所有日期
         List<LocalDate> dateList = buildDateList(begin, end);
 
+        // 按日期区间一次性查出聚合结果
         LocalDateTime beginTime = LocalDateTime.of(dateList.get(0), LocalTime.MIN);
         LocalDateTime endTime = LocalDateTime.of(dateList.get(dateList.size() - 1), LocalTime.MAX);
 
         List<Map<String, Object>> turnoverDataList = orderMapper.getTurnoverByDateRange(beginTime, endTime, Orders.COMPLETED);
 
+        // 将查询结果转成日期 -> 营业额的映射
         Map<String, Double> turnoverMap = new HashMap<>();
         for (Map<String, Object> data : turnoverDataList) {
             String date = data.get("date").toString();
@@ -54,6 +57,7 @@ public class ReportServiceImpl implements ReportService {
             turnoverMap.put(date, turnover);
         }
 
+        // 按日期顺序回填，没有数据的日期补 0
         List<Double> turnoverList = new ArrayList<>();
         for (LocalDate date : dateList) {
             Double turnover = turnoverMap.getOrDefault(date.toString(), 0.0);
@@ -77,19 +81,23 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public UserReportVO getUserStatistics(LocalDate begin, LocalDate end) {
         log.info("统计用户，开始日期：{}，结束日期：{}", begin, end);
+        // 先补齐时间区间内的所有日期
         List<LocalDate> dateList = buildDateList(begin, end);
 
+        // 按日期区间一次性查出用户统计数据
         LocalDateTime beginTime = LocalDateTime.of(dateList.get(0), LocalTime.MIN);
         LocalDateTime endTime = LocalDateTime.of(dateList.get(dateList.size() - 1), LocalTime.MAX);
 
         List<Map<String, Object>> userDataList = userMapper.getUserStatisticsByDateRange(beginTime, endTime);
 
+        // 将查询结果转成日期 -> 统计数据的映射
         Map<String, Map<String, Object>> userStatsMap = new HashMap<>();
         for (Map<String, Object> data : userDataList) {
             String date = data.get("date").toString();
             userStatsMap.put(date, data);
         }
 
+        // 回填每日新增用户和累计用户，没有新用户的日期沿用上一天总量
         List<Integer> newUserList = new ArrayList<>();
         List<Integer> totalUserList = new ArrayList<>();
         for (LocalDate date : dateList) {
@@ -124,19 +132,23 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public OrderReportVO getOrderStatistics(LocalDate begin, LocalDate end) {
         log.info("统计订单，开始日期：{}，结束日期：{}", begin, end);
+        // 先补齐时间区间内的所有日期
         List<LocalDate> dateList = buildDateList(begin, end);
 
+        // 按日期区间一次性查出订单统计结果
         LocalDateTime beginTime = LocalDateTime.of(dateList.get(0), LocalTime.MIN);
         LocalDateTime endTime = LocalDateTime.of(dateList.get(dateList.size() - 1), LocalTime.MAX);
 
         List<Map<String, Object>> orderDataList = orderMapper.getOrderStatisticsByDateRange(beginTime, endTime);
 
+        // 将查询结果转成日期 -> 统计数据的映射
         Map<String, Map<String, Object>> orderStatsMap = new HashMap<>();
         for (Map<String, Object> data : orderDataList) {
             String date = data.get("date").toString();
             orderStatsMap.put(date, data);
         }
 
+        // 回填每日订单数和有效订单数，没有数据的日期补 0
         List<Integer> orderCountList = new ArrayList<>();
         List<Integer> validOrderCountList = new ArrayList<>();
         int totalOrderCount = 0;
@@ -157,6 +169,7 @@ public class ReportServiceImpl implements ReportService {
             }
         }
 
+        // 订单完成率按百分比返回，和接口设计保持一致
         double orderCompletionRate = totalOrderCount == 0 ? 0.0 : (double) validOrderCount / totalOrderCount * 100;
 
         return OrderReportVO
@@ -173,6 +186,7 @@ public class ReportServiceImpl implements ReportService {
     private List<LocalDate> buildDateList(LocalDate begin, LocalDate end) {
         List<LocalDate> dateList = new ArrayList<>();
         LocalDate currentDate = begin;
+        // 逐天生成完整日期区间
         while (!currentDate.isAfter(end)) {
             dateList.add(currentDate);
             currentDate = currentDate.plusDays(1);
