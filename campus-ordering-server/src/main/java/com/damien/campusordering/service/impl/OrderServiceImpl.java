@@ -10,6 +10,7 @@ import com.damien.campusordering.dto.*;
 import com.damien.campusordering.entity.*;
 import com.damien.campusordering.exception.OrderBusinessException;
 import com.damien.campusordering.mapper.*;
+import com.damien.campusordering.properties.ShopProperties;
 import com.damien.campusordering.result.PageResult;
 import com.damien.campusordering.service.OrderService;
 import com.damien.campusordering.utils.HttpClientUtil;
@@ -18,6 +19,7 @@ import com.damien.campusordering.vo.OrderPaymentVO;
 import com.damien.campusordering.vo.OrderStatisticsVO;
 import com.damien.campusordering.vo.OrderSubmitVO;
 import com.damien.campusordering.vo.OrderVO;
+import com.damien.campusordering.websocket.WebSocketServer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.pagehelper.Page;
@@ -25,7 +27,6 @@ import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -55,13 +56,17 @@ public class OrderServiceImpl implements OrderService {
     private OrdersConvert ordersConvert;
     @Autowired
     private WeChatPayUtil weChatPayUtil;
+    @Autowired
+    private WebSocketServer webSocketServer;
+    @Autowired
+    private ShopProperties shopProperties;
 
-    @Value("${campus.ordering.shop.address}")
-    private String shopAddress;
-
-    @Value("${campus.ordering.baidu.ak}")
-    private String ak;
-
+    /**
+     * 用户下单
+     *
+     * @param ordersSubmitDTO
+     * @return
+     */
     @Override
     @Transactional
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
@@ -118,6 +123,12 @@ public class OrderServiceImpl implements OrderService {
         return orderSubmitVO;
     }
 
+    /**
+     * 订单支付
+     *
+     * @param ordersPaymentDTO
+     * @return
+     */
     @Override
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         Long userId = BaseContext.getCurrentId();
@@ -141,6 +152,11 @@ public class OrderServiceImpl implements OrderService {
         return vo;
     }
 
+    /**
+     * 支付成功，修改订单状态
+     *
+     * @param outTradeNo
+     */
     @Override
     public void paySuccess(String outTradeNo) {
         Orders ordersDB = orderMapper.getByNumber(outTradeNo);
@@ -153,6 +169,13 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+        //通过WebSocket向客户端推送消息
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 1);//1表示来单提醒2表示催单提醒
+        map.put("orderId", orders.getId());
+        map.put("content", "订单号" + outTradeNo);
+
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
     }
 
     /**
@@ -162,9 +185,9 @@ public class OrderServiceImpl implements OrderService {
      */
     private void checkOutOfRange(String address) {
         Map<String, String> map = new HashMap<>();
-        map.put("address", shopAddress);
+        map.put("address", shopProperties.getShopAddress());
         map.put("output", "json");
-        map.put("ak", ak);
+        map.put("ak", shopProperties.getBaiduAk());
 
         //获取店铺的经纬度坐标
         String shopCoordinate = HttpClientUtil.doGet("https://api.map.baidu.com/geocoding/v3", map);
@@ -464,7 +487,7 @@ public class OrderServiceImpl implements OrderService {
 
         //支付状态
         Integer payStatus = ordersDB.getPayStatus();
-        if (payStatus == Orders.PAID) {
+        if (payStatus.equals(Orders.PAID)) {
             //用户已支付，需要退款
             String refund = weChatPayUtil.refund(
                     ordersDB.getNumber(),

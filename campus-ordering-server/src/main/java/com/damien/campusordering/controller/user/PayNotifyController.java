@@ -29,6 +29,14 @@ public class PayNotifyController {
     @Autowired
     private WeChatProperties weChatProperties;
 
+
+    /**
+     * 微信支付成功回调
+     *
+     * @param request
+     * @param response
+     * @throws Exception
+     */
     @RequestMapping("/paySuccess")
     public void paySuccessNotify(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String body = readData(request);
@@ -49,6 +57,13 @@ public class PayNotifyController {
         responseToWeixin(response);
     }
 
+    /**
+     * 读取微信支付成功回调的数据
+     *
+     * @param request
+     * @return
+     * @throws Exception
+     */
     private String readData(HttpServletRequest request) throws Exception {
         BufferedReader reader = request.getReader();
         StringBuilder result = new StringBuilder();
@@ -62,6 +77,13 @@ public class PayNotifyController {
         return result.toString();
     }
 
+    /**
+     * 解密微信支付成功回调的数据
+     *
+     * @param body
+     * @return
+     * @throws Exception
+     */
     private String decryptData(String body) throws Exception {
         JSONObject resultObject = JSON.parseObject(body);
         JSONObject resource = resultObject.getJSONObject("resource");
@@ -78,6 +100,12 @@ public class PayNotifyController {
         return plainText;
     }
 
+    /**
+     * 响应微信
+     *
+     * @param response
+     * @throws Exception
+     */
     private void responseToWeixin(HttpServletResponse response) throws Exception {
         response.setStatus(200);
         HashMap<Object, Object> map = new HashMap<>();
